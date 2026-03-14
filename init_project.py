@@ -2,25 +2,22 @@ import os
 import json
 
 def create_vr_kvant_structure():
-    # Определение базовой структуры папок
+    # Папки
     directories = [
         'articles',
         'articles/blender',
         'articles/unity',
         'articles/unreal',
-        'img',
-        'img/blender',
-        'img/unity',
-        'img/unreal'
+        'articles/cheats',
+        'img'
     ]
 
-    # Создание папок
-    for directory in directories:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-            print(f"Создана папка: {directory}")
+    for d in directories:
+        if not os.path.exists(d):
+            os.makedirs(d)
+            print(f"Создана папка: {d}")
 
-    # Начальное содержимое для tracks.json
+    # Манифест треков
     tracks_data = {
         "tracks": [
             {
@@ -28,57 +25,50 @@ def create_vr_kvant_structure():
                 "name": "Blender Track",
                 "icon": "fas fa-shapes",
                 "colorClass": "bg-orange-500",
-                "lessons": [
-                    { "title": "Вступление", "file": "intro.md" }
-                ]
+                "lessons": [{ "title": "Вступление", "file": "intro.md" }]
             },
             {
                 "id": "unity",
                 "name": "Unity Track",
                 "icon": "fab fa-unity",
                 "colorClass": "bg-indigo-600",
-                "lessons": [
-                    { "title": "Вступление", "file": "intro.md" }
-                ]
+                "lessons": [{ "title": "Вступление", "file": "intro.md" }]
             },
             {
                 "id": "unreal",
                 "name": "Unreal Engine",
                 "icon": "fas fa-bolt",
                 "colorClass": "bg-slate-700",
-                "lessons": [
-                    { "title": "Вступление", "file": "intro.md" }
-                ]
+                "lessons": [{ "title": "Вступление", "file": "intro.md" }]
             }
         ]
     }
 
-    # Начальное содержимое для cheats.json
+    # Манифест шпаргалок
     cheats_data = {
         "cheats": [
-            {
-                "title": "Как подключить Quest 2/3?",
-                "content": "1. Установите ПО Oculus на ПК.\n2. Используйте качественный кабель USB 3.0.\n3. Включите Quest Link в настройках шлема."
-            }
+            { "title": "Подключение Oculus Quest", "file": "quest_setup.md" },
+            { "title": "Горячие клавиши Blender", "file": "blender_keys.md" }
         ]
     }
 
-    # Файлы и их содержимое
-    files_to_create = {
+    # Файлы
+    files = {
         'articles/tracks.json': json.dumps(tracks_data, indent=2, ensure_ascii=False),
         'articles/cheats.json': json.dumps(cheats_data, indent=2, ensure_ascii=False),
-        'articles/blender/intro.md': "# Добро пожаловать в Blender\n\nЗдесь начнется твой путь в 3D.",
-        'articles/unity/intro.md': "# Добро пожаловать в Unity\n\nЗдесь мы оживим твои модели.",
-        'articles/unreal/intro.md': "# Добро пожаловать в Unreal Engine\n\nСоздавай фотореалистичные миры."
+        'articles/blender/intro.md': "# Blender\n\nДобро пожаловать в мир 3D!",
+        'articles/unity/intro.md': "# Unity\n\nСоздай свою первую игру.",
+        'articles/unreal/intro.md': "# Unreal Engine\n\nГрафика будущего здесь.",
+        'articles/cheats/quest_setup.md': "# Подключение Quest\n\n1. Включи Link...\n2. Надень шлем...",
+        'articles/cheats/blender_keys.md': "# Горячие клавиши\n\n* `G` - Move\n* `S` - Scale"
     }
 
-    # Создание файлов
-    for file_path, content in files_to_create.items():
-        with open(file_path, 'w', encoding='utf-8') as f:
+    for path, content in files.items():
+        with open(path, 'w', encoding='utf-8') as f:
             f.write(content)
-            print(f"Создан файл: {file_path}")
+            print(f"Создан файл: {path}")
 
-    print("\n✅ Структура проекта успешно инициализирована!")
+    print("\n✅ Структура обновлена! Шпаргалки теперь тоже в .md")
 
 if __name__ == "__main__":
     create_vr_kvant_structure()
