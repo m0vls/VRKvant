@@ -36,10 +36,16 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* Тонкий скроллбар для боковых меню */
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark .sidebar-scroll::-webkit-scrollbar-thumb { background: #334155; }
+
         #mobile-menu { transition: transform 0.3s ease-in-out; }
         #mobile-menu.hidden-menu { transform: translateX(100%); }
         
-        /* СТИЛИ КОНТЕНТА (MARKDOWN) - МОБИЛЬНАЯ БАЗА */
+        /* СТИЛИ КОНТЕНТА (MARKDOWN) */
         .prose { color: #334155; line-height: 1.6; font-size: 0.95rem; }
         .dark .prose { color: #cbd5e1; }
         .prose .collapsible-header, .prose h2, .prose h3, .prose blockquote, .prose hr, .prose p { clear: both; }
@@ -49,6 +55,9 @@
         .prose .collapsible-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s ease; user-select: none; }
         .prose .collapsible-header:hover { background: #f1f5f9; }
         .dark .prose .collapsible-header:hover { background: #1e293b; }
+
+        /* Отступ при скролле из Оглавления, чтобы заголовок не прятался под шапку */
+        .prose h2.collapsible-header, .prose h3.collapsible-header { scroll-margin-top: 6rem; }
 
         .prose h2.collapsible-header { font-family: 'Unbounded', sans-serif; font-size: 1.25rem; font-weight: 700; color: #8b5cf6; padding: 0.8rem 1rem; margin: 1rem -1rem; border-radius: 0.75rem; }
         .prose h3.collapsible-header { font-family: 'Unbounded', sans-serif; font-size: 1.1rem; font-weight: 700; color: #6366f1; padding: 0.6rem 1rem; margin: 1rem 0; border-radius: 0.5rem; background: rgba(139, 92, 246, 0.05); }
@@ -180,9 +189,26 @@
     </section>
 
     <section id="article-viewer" class="page-content pt-20 md:pt-32 px-4 md:px-6 hidden">
-        <div class="max-w-4xl mx-auto pb-16 md:pb-20">
-            <button onclick="goBack()" class="mb-6 md:mb-10 group flex items-center text-kvant font-bold uppercase text-[10px] md:text-xs tracking-[0.2em] hover:opacity-70 transition"><i class="fas fa-long-arrow-alt-left mr-3 group-hover:-translate-x-2 transition"></i> Вернуться назад</button>
-            <article id="article-content" class="prose max-w-none bg-white dark:bg-slate-900 px-5 py-8 md:p-12 lg:p-16 rounded-[1.5rem] md:rounded-[3rem] shadow-xl md:shadow-2xl border border-slate-100 dark:border-slate-800 overflow-x-hidden relative"></article>
+        <div class="max-w-[90rem] mx-auto flex items-start gap-8 pb-16 md:pb-20 relative">
+            
+            <!-- ЛЕВОЕ МЕНЮ: Иерархия (Видно только на больших экранах) -->
+            <aside class="hidden lg:block w-64 shrink-0 sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto sidebar-scroll pr-4 pb-10">
+                <h3 class="heading-font text-[10px] text-slate-400 mb-6 uppercase tracking-[0.2em] font-bold"><i class="fas fa-sitemap mr-2"></i> Иерархия</h3>
+                <div id="left-sidebar-content" class="space-y-8"></div>
+            </aside>
+
+            <!-- ЦЕНТРАЛЬНАЯ ЧАСТЬ: Контент -->
+            <div class="flex-1 min-w-0 max-w-4xl mx-auto w-full">
+                <button onclick="goBack()" class="mb-6 md:mb-10 group flex items-center text-kvant font-bold uppercase text-[10px] md:text-xs tracking-[0.2em] hover:opacity-70 transition"><i class="fas fa-long-arrow-alt-left mr-3 group-hover:-translate-x-2 transition"></i> Вернуться назад</button>
+                <article id="article-content" class="prose max-w-none bg-white dark:bg-slate-900 px-5 py-8 md:p-12 lg:p-16 rounded-[1.5rem] md:rounded-[3rem] shadow-xl md:shadow-2xl border border-slate-100 dark:border-slate-800 overflow-x-hidden relative"></article>
+            </div>
+
+            <!-- ПРАВОЕ МЕНЮ: Оглавление статьи (Видно только на очень больших экранах) -->
+            <aside class="hidden xl:block w-64 shrink-0 sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto sidebar-scroll pl-4 pb-10 border-l border-slate-100 dark:border-slate-800/50">
+                <h3 class="heading-font text-[10px] text-slate-400 mb-6 uppercase tracking-[0.2em] font-bold"><i class="fas fa-list-ul mr-2"></i> Содержание</h3>
+                <div id="right-sidebar-content" class="space-y-2"></div>
+            </aside>
+
         </div>
     </section>
 
@@ -191,6 +217,9 @@
     <script>
         const CONFIG = { tracks: 'articles/tracks.json', cheats: 'articles/cheats.json', portfolio: 'articles/portfolio.json' };
         let lastPage = 'home', currentDir = ""; 
+        
+        // Глобальная база данных для левого бокового меню
+        window.siteData = { tracks: null, cheats: null };
 
         if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') {
             marked.setOptions({
@@ -316,6 +345,97 @@
             });
         }
 
+        // --- МАГИЯ 2: Подгрузка глобальной базы для бокового меню ---
+        async function loadGlobalData() {
+            try {
+                if(!window.siteData.tracks) {
+                    const r1 = await fetch(CONFIG.tracks + '?t=' + new Date().getTime());
+                    window.siteData.tracks = (await r1.json()).tracks;
+                }
+                if(!window.siteData.cheats) {
+                    const r2 = await fetch(CONFIG.cheats + '?t=' + new Date().getTime());
+                    window.siteData.cheats = (await r2.json()).cheats;
+                }
+            } catch(e) { console.error("Ошибка загрузки манифестов", e); }
+        }
+
+        // --- МАГИЯ 3: Левое боковое меню (Иерархия) ---
+        function buildLeftSidebar(currentPath) {
+            const container = document.getElementById('left-sidebar-content');
+            if(!container) return;
+            let html = '';
+            
+            if(window.siteData.tracks) {
+                html += `<div><h4 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center"><div class="w-2 h-2 bg-kvant rounded-full mr-2"></div>Треки</h4><ul class="space-y-1 text-sm border-l-2 border-slate-100 dark:border-slate-800 ml-1 pl-4">`;
+                window.siteData.tracks.forEach(t => {
+                    html += `<li class="font-bold text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 mt-4 mb-2">${t.name}</li>`;
+                    t.lessons.forEach(l => {
+                        const path = `articles/${t.id}/${l.file}`;
+                        const isActive = path === currentPath;
+                        html += `<li><button onclick="loadArticle('${path}')" class="text-left w-full transition-colors py-1 ${isActive ? 'text-kvant font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}">${l.title}</button></li>`;
+                    });
+                });
+                html += `</ul></div>`;
+            }
+
+            if(window.siteData.cheats) {
+                html += `<div><h4 class="font-bold text-slate-800 dark:text-white mb-4 flex items-center"><div class="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>Шпаргалки</h4><ul class="space-y-1 text-sm border-l-2 border-slate-100 dark:border-slate-800 ml-1 pl-4">`;
+                window.siteData.cheats.forEach(c => {
+                    const path = `articles/cheats/${c.file}`;
+                    const isActive = path === currentPath;
+                    html += `<li><button onclick="loadArticle('${path}')" class="text-left w-full transition-colors py-1 ${isActive ? 'text-amber-500 font-bold' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}">${c.title}</button></li>`;
+                });
+                html += `</ul></div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // --- МАГИЯ 4: Правое боковое меню (Оглавление) ---
+        function buildToC() {
+            const container = document.getElementById('right-sidebar-content');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            // Собираем все h2 и h3 из статьи
+            const headers = Array.from(document.querySelectorAll('#article-content h2, #article-content h3'));
+            
+            if(headers.length === 0) {
+                container.innerHTML = '<span class="text-slate-400 italic text-[11px]">Разделов нет</span>';
+                return;
+            }
+
+            headers.forEach((h, i) => {
+                // Добавляем ID каждому заголовку, чтобы к нему можно было скроллить
+                const id = 'heading-' + i;
+                h.id = id;
+                const isH3 = h.tagName === 'H3';
+                
+                const link = document.createElement('button');
+                link.className = `block text-left w-full transition-colors ${isH3 ? 'pl-4 text-[11px] text-slate-400 hover:text-kvant py-1' : 'text-xs font-bold text-slate-600 dark:text-slate-300 mt-4 mb-2 hover:text-kvant'}`;
+                link.textContent = h.textContent;
+                
+                link.onclick = () => {
+                    // Умный скролл: если заголовок спрятан под другим спойлером, сначала открываем родительский спойлер
+                    const wrapper = h.closest('.collapsible-content');
+                    if (wrapper) {
+                        const parentH2 = wrapper.previousElementSibling;
+                        if (parentH2 && parentH2.tagName === 'H2' && !parentH2.classList.contains('active')) {
+                            parentH2.click(); 
+                        }
+                    }
+                    // Если сам заголовок свернут - разворачиваем его
+                    if (!h.classList.contains('active')) {
+                        h.click();
+                    }
+                    // Скроллим (с небольшой задержкой, чтобы анимация развертывания успела сработать)
+                    setTimeout(() => { h.scrollIntoView({behavior: 'smooth', block: 'start'}); }, 50);
+                };
+                
+                container.appendChild(link);
+            });
+        }
+
         async function loadArticle(path) {
             showPage('article-viewer');
             const area = document.getElementById('article-content');
@@ -333,6 +453,12 @@
                 styleSpecialQuotes(); 
                 addCodeFeatures(); 
                 interceptInternalLinks();
+
+                // Строим боковые меню после загрузки статьи
+                await loadGlobalData();
+                buildLeftSidebar(path);
+                buildToC();
+
             } catch(e) { 
                 console.error(e);
                 area.innerHTML = `
@@ -402,7 +528,11 @@
         }
         function goBack() { showPage(lastPage); }
 
-        window.onload = () => { updateThemeIcons(document.documentElement.classList.contains('dark')); loadPortfolio(); };
+        window.onload = () => { 
+            updateThemeIcons(document.documentElement.classList.contains('dark')); 
+            loadPortfolio(); 
+            loadGlobalData(); // Предзагружаем базу знаний в фоне
+        };
     </script>
 </body>
 </html>
