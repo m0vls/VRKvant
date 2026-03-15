@@ -63,14 +63,23 @@
         /* Автоматические спойлеры */
         .prose .collapsible-header { 
             display: flex; align-items: center; justify-content: space-between;
-            cursor: pointer; padding: 1rem 1.5rem; margin: 1rem -1.5rem; border-radius: 1rem;
-            transition: all 0.2s ease; user-select: none;
+            cursor: pointer; transition: all 0.2s ease; user-select: none;
         }
         .prose .collapsible-header:hover { background: #f1f5f9; }
         .dark .prose .collapsible-header:hover { background: #1e293b; }
 
-        .prose h2.collapsible-header { font-family: 'Unbounded', sans-serif; font-size: 1.5rem; font-weight: 700; color: #8b5cf6; }
-        .prose h3.collapsible-header { font-family: 'Unbounded', sans-serif; font-size: 1.15rem; font-weight: 700; color: #6366f1; }
+        .prose h2.collapsible-header { 
+            font-family: 'Unbounded', sans-serif; font-size: 1.5rem; font-weight: 700; color: #8b5cf6; 
+            padding: 1rem 1.5rem; margin: 1rem -1.5rem; border-radius: 1rem;
+        }
+        
+        /* Убираем отрицательные отступы у h3, чтобы их скругления не обрезались родительским overflow: hidden */
+        .prose h3.collapsible-header { 
+            font-family: 'Unbounded', sans-serif; font-size: 1.15rem; font-weight: 700; color: #6366f1; 
+            padding: 0.75rem 1.25rem; margin: 1rem 0; border-radius: 0.75rem;
+            background: rgba(139, 92, 246, 0.05); /* Легкий фон для выделения вложенности */
+        }
+        .dark .prose h3.collapsible-header { background: rgba(139, 92, 246, 0.1); }
         
         .prose .collapsible-header::after {
             content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
