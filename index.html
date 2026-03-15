@@ -26,7 +26,6 @@
             }
         }
 
-        // Проверка темы при загрузке
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
@@ -42,7 +41,6 @@
         }
         .heading-font { font-family: 'Unbounded', sans-serif; }
         
-        /* Навигация страниц */
         .page-content { display: none; }
         .page-content.active { display: block; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { 
@@ -50,11 +48,9 @@
             to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* Карусель портфолио */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Мобильное меню */
         #mobile-menu { transition: transform 0.3s ease-in-out; }
         #mobile-menu.hidden-menu { transform: translateX(100%); }
         
@@ -62,31 +58,63 @@
         .prose { color: #334155; line-height: 1.75; }
         .dark .prose { color: #cbd5e1; }
         
-        .prose h1 { font-family: 'Unbounded', sans-serif; font-size: 2rem; margin-bottom: 1.5rem; color: #8b5cf6; font-weight: 700; line-height: 1.2; }
-        .prose h2 { font-family: 'Unbounded', sans-serif; font-size: 1.5rem; margin-top: 2rem; margin-bottom: 1rem; font-weight: 700; color: #8b5cf6; }
-        .prose h3 { font-family: 'Unbounded', sans-serif; font-size: 1.25rem; margin-top: 1.5rem; margin-bottom: 0.75rem; font-weight: 700; }
+        .prose h1 { font-family: 'Unbounded', sans-serif; font-size: 2rem; margin-bottom: 2rem; color: #8b5cf6; font-weight: 700; line-height: 1.2; }
+        
+        /* Стили для автоматических спойлеров-заголовков */
+        .prose .collapsible-header { 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 1rem 1.5rem;
+            margin: 1rem -1.5rem;
+            border-radius: 1rem;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .prose .collapsible-header:hover { background: #f1f5f9; }
+        .dark .prose .collapsible-header:hover { background: #1e293b; }
+
+        .prose h2.collapsible-header { font-family: 'Unbounded', sans-serif; font-size: 1.5rem; font-weight: 700; color: #8b5cf6; }
+        .prose h3.collapsible-header { font-family: 'Unbounded', sans-serif; font-size: 1.15rem; font-weight: 700; color: #6366f1; }
+        
+        .prose .collapsible-header::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+            opacity: 0.5;
+        }
+        .prose .collapsible-header.active::after { transform: rotate(180deg); opacity: 1; }
+
+        .prose .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease;
+            opacity: 0;
+            padding-left: 0.5rem;
+        }
+        .prose .collapsible-content.show {
+            max-height: 5000px; /* Достаточно большое значение */
+            opacity: 1;
+            margin-bottom: 2rem;
+        }
         
         .prose p { margin-bottom: 1.25rem; }
-        
         .prose a { color: #8b5cf6; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; transition: color 0.2s; }
         .prose a:hover { color: #7c3aed; }
-        
         .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.25rem; }
         .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.25rem; }
-        
         .prose blockquote { border-left: 4px solid #8b5cf6; padding-left: 1rem; margin: 1.5rem 0; font-style: italic; background: #f8fafc; padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; }
         .dark .prose blockquote { background: #1e293b; color: #94a3b8; }
-        
         .prose img { max-width: 100%; border-radius: 1rem; margin: 2rem auto; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         .prose hr { border: 0; border-top: 2px dashed #e2e8f0; margin: 2.5rem 0; }
         .dark .prose hr { border-top-color: #334155; }
-        
         .prose p code, .prose li code { background: #f1f5f9; color: #8b5cf6; padding: 0.2rem 0.4rem; border-radius: 0.4rem; font-family: monospace; font-size: 0.9em; font-weight: 600; }
         .dark .prose p code, .dark .prose li code { background: #1e293b; color: #a78bfa; }
-        
         .prose pre { position: relative; background: #1e293b; padding: 1.5rem; padding-top: 3.5rem; border-radius: 1rem; overflow-x: auto; margin-bottom: 1.5rem; color: #e2e8f0; }
         .prose pre code { background: transparent !important; padding: 0; font-size: 0.9em; font-family: 'Courier New', Courier, monospace; line-height: 1.6; }
-
         .copy-code-btn { position: absolute; top: 0.75rem; right: 0.75rem; background: rgba(255, 255, 255, 0.1); color: #cbd5e1; border: none; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-size: 0.7rem; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem; }
         .copy-code-btn:hover { background: rgba(255, 255, 255, 0.2); color: white; }
         .lang-badge { position: absolute; top: 0.75rem; left: 1.25rem; color: #64748b; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
@@ -167,7 +195,6 @@
                         <button onclick="scrollPortfolio(400)" class="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-md flex items-center justify-center hover:text-kvant transition"><i class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
-
                 <div id="portfolio-carousel" class="flex overflow-x-auto snap-x snap-mandatory gap-8 pb-10 hide-scrollbar scroll-smooth">
                     <div class="w-full text-center py-20 opacity-50"><i class="fas fa-spinner fa-spin mr-2"></i> Загрузка проектов...</div>
                 </div>
@@ -190,13 +217,13 @@
         </div>
     </section>
 
-    <!-- Статья -->
+    <!-- Просмотр статьи -->
     <section id="article-viewer" class="page-content pt-32 px-6 hidden">
         <div class="max-w-4xl mx-auto pb-20">
             <button onclick="goBack()" class="mb-10 group flex items-center text-kvant font-bold uppercase text-xs tracking-[0.2em] hover:opacity-70 transition">
                 <i class="fas fa-long-arrow-alt-left mr-3 group-hover:-translate-x-2 transition"></i> Вернуться назад
             </button>
-            <article id="article-content" class="prose max-w-none bg-white dark:bg-slate-900 p-8 md:p-20 rounded-[3rem] shadow-2xl border border-slate-100 dark:border-slate-800">
+            <article id="article-content" class="prose max-w-none bg-white dark:bg-slate-900 p-8 md:p-16 rounded-[3rem] shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
             </article>
         </div>
     </section>
@@ -210,6 +237,7 @@
         let lastPage = 'home';
         let currentDir = ""; 
 
+        // Инициализация Highlight.js
         if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') {
             marked.setOptions({
                 highlight: function(code, lang) {
@@ -220,45 +248,42 @@
             });
         }
 
-        function toggleMobileMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden-menu');
-        }
-
-        function toggleTheme() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateThemeIcons(isDark);
-        }
-
-        function updateThemeIcons(isDark) {
-            const icon = document.getElementById('theme-icon');
-            if (icon) icon.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
-        }
-
-        function showPage(pageId) {
-            document.getElementById('mobile-menu').classList.add('hidden-menu');
-            if (pageId !== 'article-viewer') lastPage = pageId;
-
-            document.querySelectorAll('.page-content').forEach(p => {
-                p.classList.remove('active');
-                p.classList.add('hidden');
-                if(p.id === pageId) {
-                    p.classList.remove('hidden');
-                    p.classList.add('active');
+        // Функция превращения обычных Markdown заголовков в сворачиваемые
+        function makeHeadersCollapsible() {
+            const area = document.getElementById('article-content');
+            // Ищем все h2 и h3 (именно они будут спойлерами)
+            const headers = area.querySelectorAll('h2, h3');
+            
+            headers.forEach(header => {
+                header.classList.add('collapsible-header');
+                
+                // Создаем контейнер для контента, который идет после этого заголовка
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'collapsible-content';
+                
+                // Перемещаем все следующие элементы в этот контейнер, пока не встретим заголовок такого же или выше уровня
+                let next = header.nextElementSibling;
+                while (next && !['H1', 'H2', 'H3'].includes(next.tagName) || (header.tagName === 'H3' && next.tagName === 'H3')) {
+                    if (header.tagName === 'H2' && next.tagName === 'H3') {
+                        // h2 поглощает h3 (вложенность)
+                    } else if (['H2', 'H3'].includes(next.tagName)) {
+                        break;
+                    }
+                    
+                    const elementToMove = next;
+                    next = next.nextElementSibling;
+                    contentWrapper.appendChild(elementToMove);
                 }
-            });
+                
+                header.parentNode.insertBefore(contentWrapper, next);
 
-            document.querySelectorAll('.nav-item').forEach(n => {
-                const isCurrent = n.id === 'nav-' + pageId || (pageId === 'article-viewer' && n.id === 'nav-' + lastPage);
-                n.classList.toggle('text-kvant', isCurrent);
+                // Добавляем событие клика
+                header.onclick = () => {
+                    header.classList.toggle('active');
+                    contentWrapper.classList.toggle('show');
+                };
             });
-
-            if (pageId === 'tracks') loadTracks();
-            if (pageId === 'cheats') loadCheats();
-            window.scrollTo(0, 0);
         }
-
-        function goBack() { showPage(lastPage); }
 
         async function loadArticle(path) {
             showPage('article-viewer');
@@ -271,10 +296,14 @@
                 const text = await res.text();
                 currentDir = path.substring(0, path.lastIndexOf('/') + 1);
                 area.innerHTML = typeof marked.parse === 'function' ? marked.parse(text) : marked(text);
+                
+                // Запускаем магию сворачивания
+                makeHeadersCollapsible();
+                
                 addCodeFeatures(); 
                 interceptInternalLinks();
             } catch(e) {
-                area.innerHTML = `<div class="text-center py-20"><h2 class="heading-font text-2xl">Статья не найдена</h2></div>`;
+                area.innerHTML = `<div class="text-center py-20"><h2 class="heading-font text-2xl text-red-500">Ошибка загрузки статьи</h2></div>`;
             }
         }
 
@@ -338,12 +367,36 @@
                             <div class="flex items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest"><i class="fas fa-user-circle mr-2 text-kvant"></i> ${p.authors}</div>
                         </div>
                     </div>`).join('');
-            } catch(e) {
-                carousel.innerHTML = '<div class="w-full text-center py-20 opacity-30 italic">Проекты появятся здесь в ближайшее время...</div>';
-            }
+            } catch(e) { carousel.innerHTML = ''; }
         }
 
         function scrollPortfolio(val) { document.getElementById('portfolio-carousel').scrollBy({ left: val, behavior: 'smooth' }); }
+        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden-menu'); }
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcons(isDark);
+        }
+        function updateThemeIcons(isDark) {
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.classList.replace(isDark ? 'fa-moon' : 'fa-sun', isDark ? 'fa-sun' : 'fa-moon');
+        }
+        function showPage(pageId) {
+            document.getElementById('mobile-menu').classList.add('hidden-menu');
+            if (pageId !== 'article-viewer') lastPage = pageId;
+            document.querySelectorAll('.page-content').forEach(p => {
+                p.classList.remove('active'); p.classList.add('hidden');
+                if(p.id === pageId) { p.classList.remove('hidden'); p.classList.add('active'); }
+            });
+            document.querySelectorAll('.nav-item').forEach(n => {
+                const isCurrent = n.id === 'nav-' + pageId || (pageId === 'article-viewer' && n.id === 'nav-' + lastPage);
+                n.classList.toggle('text-kvant', isCurrent);
+            });
+            if (pageId === 'tracks') loadTracks();
+            if (pageId === 'cheats') loadCheats();
+            window.scrollTo(0, 0);
+        }
+        function goBack() { showPage(lastPage); }
 
         async function loadTracks() {
             try {
