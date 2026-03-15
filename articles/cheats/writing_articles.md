@@ -82,11 +82,11 @@ Markdown — это текстовый стандарт, который прев
 
 **Как написать (Код):**
 ```text
-[gallery: img/unreal/interface_1.png | img/unreal/interface_2.png | img/unreal/interface_3.png]
+[gallery: img/unreal/unreal_logo.jpg | img/blender/blender_logo.jpg | img/unity/unity_logo.jpeg]
 ```
 
 **Как это выглядит:**
-[gallery: img/unreal/unreal_logo.png | img/blender/blender_logo.png | img/unity/unity_logo.png]
+[gallery: img/unreal/unreal_logo.jpg | img/blender/blender_logo.jpg | img/unity/unity_logo.jpeg]
 
 ### Слайдер «До и После»
 Отлично подходит для сравнения графики, рендеров или применения эффектов (ДО и ПОСЛЕ).
