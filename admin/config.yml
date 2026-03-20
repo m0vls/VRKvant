@@ -2,7 +2,8 @@ backend:
   name: github
   repo: VRARKvant/VRKvant
   branch: main
-
+  base_url: https://sveltia-cms-auth.deno.dev
+  
 media_folder: "img"
 public_folder: "img"
 
