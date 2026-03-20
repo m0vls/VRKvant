@@ -1,0 +1,34 @@
+name: Build Manifests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'articles/**/*.md'
+      - 'scripts/build_manifests.py'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Run build script
+      run: python3 scripts/build_manifests.py
+
+    - name: Commit changes
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "auto: обновление JSON-манифестов [skip ci]"
+        file_pattern: 'articles/*.json'
