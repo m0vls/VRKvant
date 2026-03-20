@@ -3,7 +3,7 @@
     {
       "id": "unity",
       "name": "Unity",
-      "icon": "img/unity/unity_logo.jpeg",
+      "icon": "fab fa-unity",
       "colorClass": "bg-zinc-800",
       "lessons": [
         {
@@ -16,7 +16,7 @@
     {
       "id": "blender",
       "name": "Blender",
-      "icon": "img/blender/blender_logo.jpg",
+      "icon": "https://cdn.simpleicons.org/blender/f97316",
       "colorClass": "bg-orange-600",
       "lessons": [
         {
@@ -29,7 +29,7 @@
     {
       "id": "unreal",
       "name": "Unreal Engine",
-      "icon": "img/unreal/unreal_logo.jpg",
+      "icon": "https://cdn.simpleicons.org/unrealengine/f59e0b",
       "colorClass": "bg-blue-700",
       "lessons": [
         {

@@ -3,7 +3,7 @@ title: Введение в Unreal Engine
 module: Основы
 order: 1
 name: Unreal Engine
-icon: img/unreal/unreal_logo.jpg
+icon: https://cdn.simpleicons.org/unrealengine/f59e0b
 colorClass: bg-blue-700
 ---
 # Unreal Engine

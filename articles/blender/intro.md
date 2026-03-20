@@ -3,7 +3,7 @@ title: Введение в Blender
 module: Основы
 order: 1
 name: Blender
-icon: img/blender/blender_logo.jpg
+icon: https://cdn.simpleicons.org/blender/f97316
 colorClass: bg-orange-600
 ---
 # Blender

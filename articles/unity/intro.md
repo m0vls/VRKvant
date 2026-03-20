@@ -3,7 +3,7 @@ title: Введение в Unity
 module: Основы
 order: 1
 name: Unity
-icon: img/unity/unity_logo.jpeg
+icon: fab fa-unity
 colorClass: bg-zinc-800
 ---
 # Unity
