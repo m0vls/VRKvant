@@ -26,7 +26,7 @@ const mdInput = document.getElementById("markdown-input");
 const mdPreview = document.getElementById("editor-preview");
 const mdPlaceholder = document.getElementById("editor-placeholder");
 
-if(mdInput) {
+if(mdInput && mdPreview) {
     mdInput.addEventListener("input", () => updateEditorPreview(mdInput, mdPreview, mdPlaceholder));
     
     // Передаем эти элементы в функции для редактора
