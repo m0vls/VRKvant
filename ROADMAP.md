@@ -13,6 +13,18 @@
     5. Если файлы изменились — автоматически делать коммит с сообщением "chore: auto-update JSON manifests" и пушить их обратно в `main`.
     6. Использовать `secrets.GITHUB_TOKEN` для прав на коммит.
 
+# План разработки: Этап 2.4 (Переход на Sveltia CMS)
+
+## Завершенные задачи
+
+- [x] **Шаг 1: Обновление движка в `admin/index.html`**
+  - Найти тег `<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>`.
+  - Заменить его на современный форк: `<script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>`.
+
+- [x] **Шаг 2: Очистка бэкенда в `admin/config.yml`**
+  - В блоке `backend` оставить ТОЛЬКО три параметра: `name: github`, `repo: NekrasovLE/VRKvant` и `branch: main`.
+  - Полностью удалить строку `base_url: https://...` (так как Sveltia использует встроенную систему авторизации).
+
 # План разработки: Этап 3 (Умный локальный поиск)
 
 ## Завершенные задачи
