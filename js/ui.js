@@ -607,6 +607,20 @@ function createBaseGraph(container, data, highlightPath, isGlobal = false) {
     return graph;
 }
 
+export function calculateNextOrder(lessons) {
+    if (!lessons || !Array.isArray(lessons) || lessons.length === 0) return 10;
+    const orders = lessons.map(l => parseInt(l.order) || 0);
+    return Math.max(...orders) + 10;
+}
+
+export function getUniqueModules(lessons) {
+    if (!lessons || !Array.isArray(lessons)) return [];
+    const modules = lessons
+        .map(l => l.module)
+        .filter(m => m && m.trim() !== '');
+    return [...new Set(modules)];
+}
+
 export function scrollToHeader(h) {
     const wrapper = h.closest('.collapsible-content');
     if (wrapper) {

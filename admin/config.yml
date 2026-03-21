@@ -16,6 +16,8 @@ collections:
     label: "Блог / Новости"
     folder: "articles/blog"
     create: true
+    extension: "md"
+    format: "yaml-frontmatter"
     slug: "{{slug}}"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
@@ -26,6 +28,8 @@ collections:
     label: "Трек: Blender"
     folder: "articles/blender"
     create: true
+    extension: "md"
+    format: "yaml-frontmatter"
     slug: "{{slug}}"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
@@ -44,6 +48,8 @@ collections:
     label: "Трек: Unity"
     folder: "articles/unity"
     create: true
+    extension: "md"
+    format: "yaml-frontmatter"
     slug: "{{slug}}"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
@@ -62,6 +68,8 @@ collections:
     label: "Трек: Unreal Engine"
     folder: "articles/unreal"
     create: true
+    extension: "md"
+    format: "yaml-frontmatter"
     slug: "{{slug}}"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
@@ -80,6 +88,8 @@ collections:
     label: "Шпаргалки"
     folder: "articles/cheats"
     create: true
+    extension: "md"
+    format: "yaml-frontmatter"
     slug: "{{slug}}"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
@@ -92,6 +102,8 @@ collections:
     label: "Портфолио"
     folder: "articles/portfolio"
     create: true
+    extension: "md"
+    format: "yaml-frontmatter"
     slug: "{{slug}}"
     fields:
       - { label: "Название проекта", name: "title", widget: "string" }

@@ -28,7 +28,13 @@ export default async function handler(req, res) {
       return res.status(400).send(`GitHub Error: ${data.error_description || data.error}`);
     }
 
-    // Возвращаем HTML-скрипт для передачи токена в CMS
+    // Разрешенные домены (Whitelist)
+    const allowedOrigins = [
+      'https://vrarkvant.github.io',
+      'http://localhost:3000',
+      'https://levdob.github.io' // На случай кастомного домена
+    ];
+
     const content = `
       <!DOCTYPE html>
       <html>
@@ -36,8 +42,14 @@ export default async function handler(req, res) {
       <body>
         <script>
           (function() {
+            const allowedOrigins = ${JSON.stringify(allowedOrigins)};
+            
             function receiveMessage(e) {
-              // Сообщение для Sveltia / Decap CMS
+              if (!allowedOrigins.includes(e.origin)) {
+                console.error("Origin not allowed: " + e.origin);
+                return;
+              }
+              
               const token = "${data.access_token}";
               const result = JSON.stringify({
                 token: token,
@@ -49,7 +61,10 @@ export default async function handler(req, res) {
                 e.origin
               );
             }
+            
             window.addEventListener("message", receiveMessage, false);
+            
+            // Запрашиваем подтверждение от открывающего окна
             window.opener.postMessage("authorizing:github", "*");
           })();
         </script>
