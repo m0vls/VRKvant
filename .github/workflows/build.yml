@@ -140,7 +140,15 @@ jobs:
       - name: Create test results directory
         run: mkdir -p test-results
 
+      - name: Cache Playwright Browsers
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright Browsers
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install chromium
 
       - name: Install Playwright Dependencies
