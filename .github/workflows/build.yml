@@ -25,6 +25,13 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build CSS
+      run: npm run build:css
 
     - name: Run build script
       run: node scripts/build.js
@@ -32,8 +39,8 @@ jobs:
     - name: Commit changes
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        commit_message: "auto: обновление манифестов и индексов [skip ci]"
-        file_pattern: 'articles/*.json'
+        commit_message: "auto: обновление манифестов и стилей [skip ci]"
+        file_pattern: 'articles/*.json css/style.css'
         disable_globbing: true
 
     # Триггер для перезапуска GitHub Pages после коммита

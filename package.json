@@ -1,0 +1,14 @@
+{
+  "name": "vrkvant-knowledge-hub",
+  "version": "3.0.0",
+  "description": "База знаний VR/AR Квантума",
+  "scripts": {
+    "build:css": "tailwindcss -i ./css/input.css -o ./css/style.css --minify",
+    "watch:css": "tailwindcss -i ./css/input.css -o ./css/style.css --watch",
+    "build:manifests": "node scripts/build.js"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "@tailwindcss/typography": "^0.5.10"
+  }
+}
