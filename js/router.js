@@ -106,9 +106,13 @@ function parseFrontmatter(content) {
 
 async function renderArticle(path) {
     // Нормализация пути для GitHub Pages
-    // Если путь начинается с 'articles/', убеждаемся, что он запрашивается корректно
     let targetPath = path;
     if (targetPath.startsWith('/')) targetPath = targetPath.substring(1);
+    
+    // Гарантируем, что путь начинается с 'articles/'
+    if (!targetPath.startsWith('articles/')) {
+        targetPath = 'articles/' + targetPath;
+    }
     
     console.log("Запрос статьи по пути:", targetPath); 
     
