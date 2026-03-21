@@ -36,6 +36,12 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Build CSS
+      run: npm run build:css
+
+    - name: Run build script (Generate Manifests)
+      run: node scripts/build.js
+
     - name: Run Unit & Integration Tests
       run: npm run test
 
@@ -62,12 +68,6 @@ jobs:
         path: playwright-report/
         retention-days: 30
 
-    - name: Build CSS
-      run: npm run build:css
-
-    - name: Run build script
-      run: node scripts/build.js
-
     - name: Commit changes
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
@@ -75,7 +75,6 @@ jobs:
         file_pattern: 'articles/*.json css/style.css'
         disable_globbing: true
 
-    # Триггер для перезапуска GitHub Pages после коммита
     - name: Trigger GitHub Pages deploy
       run: |
         curl -X POST \
