@@ -134,9 +134,7 @@ async function renderArticle(path) {
         targetPath = 'articles/' + targetPath;
     }
     
-    // Убеждаемся, что путь начинается с ./ для относительного запроса
-    const fetchPath = targetPath.startsWith('./') ? targetPath : './' + targetPath;
-    console.log("Fetching article:", fetchPath); 
+    console.log("Rendering article:", targetPath); 
     
     document.querySelectorAll('.page-content').forEach(p => { p.classList.remove('active'); p.classList.add('hidden'); });
     document.getElementById('article-viewer').classList.remove('hidden');
@@ -146,10 +144,12 @@ async function renderArticle(path) {
 
     const area = document.getElementById('article-content');
     area.innerHTML = '<div class="flex justify-center p-12 md:p-20"><i class="fas fa-circle-notch fa-spin text-3xl md:text-4xl text-kvant"></i></div>';
+    
     try {
-        const url = fetchPath + '?t=' + new Date().getTime();
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}: Файл не найден по пути "${fetchPath}"`);
+        // Используем относительный путь от корня сайта
+        const res = await fetch(targetPath + '?t=' + new Date().getTime());
+        if (!res.ok) throw new Error(`Ошибка ${res.status}: Не удалось загрузить файл по адресу "${window.location.origin + window.location.pathname + targetPath}"`);
+        
         let text = await res.text();
         currentDir = targetPath.substring(0, targetPath.lastIndexOf('/') + 1);
         
