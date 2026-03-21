@@ -88,20 +88,29 @@ export function goBackSafe() {
 }
 
 function parseFrontmatter(content) {
-    // Улучшенное регулярное выражение для поддержки \r\n и пробелов
-    const match = content.match(/^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*[\r\n]+/);
+    // Удаляем BOM и лишние пробелы в начале
+    const cleanContent = content.replace(/^\uFEFF/, '').trimStart();
+    
+    // Регулярное выражение, которое ищет блок между --- и --- в начале файла
+    const match = cleanContent.match(/^---\s*[\r\n]+([\s\S]*?)[\r\n]+---\s*[\r\n]+/);
+    
     if (match) {
         const frontmatterStr = match[1];
         const data = {};
         frontmatterStr.split(/\r?\n/).forEach(line => {
-            const [key, ...value] = line.split(':');
-            if (key && value.length) {
-                data[key.trim()] = value.join(':').trim().replace(/^["']|["']$/g, '');
+            const separatorIndex = line.indexOf(':');
+            if (separatorIndex !== -1) {
+                const key = line.substring(0, separatorIndex).trim();
+                const value = line.substring(separatorIndex + 1).trim();
+                data[key] = value.replace(/^["']|["']$/g, '');
             }
         });
-        return { data, content: content.slice(match[0].length) };
+        // Возвращаем данные и контент БЕЗ фронтматтера
+        return { data, content: cleanContent.slice(match[0].length) };
     }
-    return { data: {}, content };
+    
+    // Если фронтматтер не найден, возвращаем весь контент как есть
+    return { data: {}, content: cleanContent };
 }
 
 async function renderArticle(path) {
