@@ -19,6 +19,15 @@ collections:
     extension: "md"
     format: "yaml-frontmatter"
     slug: "{{slug}}"
+    summary: "[{{order}}] {{title}} ({{module}})"
+    sortable_fields: ["order", "title"]
+    view_groups:
+      - label: "Модуль"
+        field: "module"
+    view_filters:
+      - label: "Только уроки"
+        field: "type"
+        pattern: "lesson"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
       - { label: "Дата", name: "date", widget: "datetime" }
@@ -31,6 +40,15 @@ collections:
     extension: "md"
     format: "yaml-frontmatter"
     slug: "{{slug}}"
+    summary: "[{{order}}] {{title}} ({{module}})"
+    sortable_fields: ["order", "title"]
+    view_groups:
+      - label: "Модуль"
+        field: "module"
+    view_filters:
+      - label: "Только уроки"
+        field: "type"
+        pattern: "lesson"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
       - { label: "Модуль", name: "module", widget: "string" }
@@ -51,6 +69,15 @@ collections:
     extension: "md"
     format: "yaml-frontmatter"
     slug: "{{slug}}"
+    summary: "[{{order}}] {{title}} ({{module}})"
+    sortable_fields: ["order", "title"]
+    view_groups:
+      - label: "Модуль"
+        field: "module"
+    view_filters:
+      - label: "Только уроки"
+        field: "type"
+        pattern: "lesson"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
       - { label: "Модуль", name: "module", widget: "string" }
@@ -71,6 +98,15 @@ collections:
     extension: "md"
     format: "yaml-frontmatter"
     slug: "{{slug}}"
+    summary: "[{{order}}] {{title}} ({{module}})"
+    sortable_fields: ["order", "title"]
+    view_groups:
+      - label: "Модуль"
+        field: "module"
+    view_filters:
+      - label: "Только уроки"
+        field: "type"
+        pattern: "lesson"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
       - { label: "Модуль", name: "module", widget: "string" }
@@ -91,6 +127,15 @@ collections:
     extension: "md"
     format: "yaml-frontmatter"
     slug: "{{slug}}"
+    summary: "[{{order}}] {{title}} ({{module}})"
+    sortable_fields: ["order", "title"]
+    view_groups:
+      - label: "Модуль"
+        field: "module"
+    view_filters:
+      - label: "Только уроки"
+        field: "type"
+        pattern: "lesson"
     fields:
       - { label: "Заголовок", name: "title", widget: "string" }
       - { label: "Модуль", name: "module", widget: "string" }
@@ -105,6 +150,15 @@ collections:
     extension: "md"
     format: "yaml-frontmatter"
     slug: "{{slug}}"
+    summary: "[{{order}}] {{title}} ({{module}})"
+    sortable_fields: ["order", "title"]
+    view_groups:
+      - label: "Модуль"
+        field: "module"
+    view_filters:
+      - label: "Только уроки"
+        field: "type"
+        pattern: "lesson"
     fields:
       - { label: "Название проекта", name: "title", widget: "string" }
       - { label: "Краткое описание", name: "description", widget: "text" }
