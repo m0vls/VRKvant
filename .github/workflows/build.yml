@@ -78,10 +78,13 @@ jobs:
           echo "| :--- | :---: | :--- |" >> $GITHUB_STEP_SUMMARY
           
           if [ -f test-results/vitest-results.xml ]; then
-            # Используем perl для надежного парсинга многострочного XML
-            perl -0777 -ne 'while (/<testcase\s+name="([^"]+)"[^>]*?time="([^"]+)"[^>]*?>(.*?)(<\/testcase>|\/>)/gs) { 
-              $n=$1; $t=$2; $c=$3; $s = ($c =~ /<failure/) ? "❌" : "✅"; 
-              print "| $n | $s | ${t}s |\n"; 
+            # Используем perl для гибкого парсинга XML
+            perl -0777 -ne 'while (/<testcase\s+([^>]+)>(.*?)(<\/testcase>|\/>)/gs) { 
+              $attrs=$1; $content=$2;
+              $name = ($attrs =~ /name="([^"]+)"/) ? $1 : "Unknown";
+              $time = ($attrs =~ /time="([^"]+)"/) ? $1 : "0";
+              $status = ($content =~ /<failure/) ? "❌" : "✅";
+              print "| $name | $status | ${time}s |\n";
             }' test-results/vitest-results.xml >> $GITHUB_STEP_SUMMARY
             
             # Итоговая строка
@@ -161,12 +164,15 @@ jobs:
           echo "| :--- | :---: | :--- |" >> $GITHUB_STEP_SUMMARY
           
           if [ -f test-results/playwright-results.xml ]; then
-            # Используем perl для надежного парсинга многострочного XML
-            perl -0777 -ne 'while (/<testcase\s+name="([^"]+)"[^>]*?time="([^"]+)"[^>]*?>(.*?)(<\/testcase>|\/>)/gs) { 
-              $n=$1; $t=$2; $c=$3; $s = ($c =~ /<failure/) ? "❌" : "✅"; 
-              print "| $n | $s | ${t}s |\n"; 
+            # Используем perl для гибкого парсинга XML
+            perl -0777 -ne 'while (/<testcase\s+([^>]+)>(.*?)(<\/testcase>|\/>)/gs) { 
+              $attrs=$1; $content=$2;
+              $name = ($attrs =~ /name="([^"]+)"/) ? $1 : "Unknown";
+              $time = ($attrs =~ /time="([^"]+)"/) ? $1 : "0";
+              $status = ($content =~ /<failure/) ? "❌" : "✅";
+              print "| $name | $status | ${time}s |\n";
             }' test-results/playwright-results.xml >> $GITHUB_STEP_SUMMARY
-            
+
             # Итоговая строка
             TOTAL=$(grep -o 'tests="[^"]*"' test-results/playwright-results.xml | head -1 | cut -d'"' -f2)
             FAILURES=$(grep -o 'failures="[^"]*"' test-results/playwright-results.xml | head -1 | cut -d'"' -f2)
@@ -175,7 +181,6 @@ jobs:
           else
             echo "| ⚠️ Ошибка | Файл отчета не найден | - |" >> $GITHUB_STEP_SUMMARY
           fi
-
       - name: Publish Playwright Test Report
         uses: dorny/test-reporter@v1
         if: always()
