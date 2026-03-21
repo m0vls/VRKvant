@@ -1,4 +1,4 @@
-name: Build Manifests
+name: Build Manifests & CI Pipeline
 
 on:
   push:
@@ -19,132 +19,203 @@ on:
       - '.github/workflows/build.yml'
 
 jobs:
-  build:
+  build-and-unit:
+    name: 🏗️ Build & Unit Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: 🛠️ Build Assets (CSS & Manifests)
+        id: build
+        run: |
+          echo "### 📦 Этапы сборки" >> $GITHUB_STEP_SUMMARY
+          
+          # Сборка CSS
+          if npm run build:css; then
+            echo "| 🛠 Сборка CSS | ✅ Готово | Минификация завершена |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| 🛠 Сборка CSS | ❌ Ошибка | Проверьте tailwind.config.js |" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          
+          # Сборка Манифестов
+          if node scripts/build.js; then
+            echo "| 📦 Генерация манифестов | ✅ Готово | Файлы .json обновлены |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| 📦 Генерация манифестов | ❌ Ошибка | Проверьте scripts/build.js |" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Create test results directory
+        run: mkdir -p test-results
+
+      - name: 🧪 Run Unit & Integration Tests
+        run: npm run test
+        continue-on-error: true
+
+      - name: 📝 Vitest Summary to Job Summary
+        if: always()
+        run: |
+          echo "### 🧪 Результаты Unit-тестов" >> $GITHUB_STEP_SUMMARY
+          echo "| Статус | Тесты | Время |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- | --- |" >> $GITHUB_STEP_SUMMARY
+          if [ -f test-results/vitest-results.xml ]; then
+            PASSED=$(grep -o 'tests="[^"]*"' test-results/vitest-results.xml | head -1 | cut -d'"' -f2)
+            ERRORS=$(grep -o 'errors="[^"]*"' test-results/vitest-results.xml | head -1 | cut -d'"' -f2)
+            FAILURES=$(grep -o 'failures="[^"]*"' test-results/vitest-results.xml | head -1 | cut -d'"' -f2)
+            TIME=$(grep -o 'time="[^"]*"' test-results/vitest-results.xml | head -1 | cut -d'"' -f2)
+            FAILED=$((ERRORS + FAILURES))
+            if [ $FAILED -eq 0 ]; then
+              echo "| ✅ Успешно | $PASSED / $PASSED | ${TIME}s |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| ❌ Ошибка | $FAILED / $PASSED | ${TIME}s |" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "| ⚠️ Ошибка | Файл отчета не найден | - |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Publish Vitest Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Vitest Results (Detailed)
+          path: test-results/vitest-results.xml
+          reporter: java-junit
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-assets
+          path: |
+            css/style.css
+            articles/*.json
+
+  e2e-tests:
+    name: 🎭 E2E Tests
+    needs: build-and-unit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: built-assets
+
+      - name: Create test results directory
+        run: mkdir -p test-results
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium
+
+      - name: Install Playwright Dependencies
+        run: npx playwright install-deps chromium
+
+      - name: Start local server
+        run: npx http-server . -p 3000 &
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000
+
+      - name: 🎭 Run E2E Tests
+        run: npm run test:e2e
+        continue-on-error: true
+
+      - name: 📝 Playwright Summary to Job Summary
+        if: always()
+        run: |
+          echo "### 🎭 Результаты E2E-тестов" >> $GITHUB_STEP_SUMMARY
+          echo "| Статус | Тесты | Время |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- | --- |" >> $GITHUB_STEP_SUMMARY
+          if [ -f test-results/playwright-results.xml ]; then
+            TOTAL=$(grep -o 'tests="[^"]*"' test-results/playwright-results.xml | head -1 | cut -d'"' -f2)
+            FAILURES=$(grep -o 'failures="[^"]*"' test-results/playwright-results.xml | head -1 | cut -d'"' -f2)
+            TIME=$(grep -o 'time="[^"]*"' test-results/playwright-results.xml | head -1 | cut -d'"' -f2)
+            if [ $FAILURES -eq 0 ]; then
+              echo "| ✅ Успешно | $TOTAL | ${TIME}s |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| ❌ Ошибка | $FAILURES / $TOTAL | ${TIME}s |" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "| ⚠️ Ошибка | Файл отчета не найден | - |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Publish Playwright Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Playwright Results (Detailed)
+          path: test-results/playwright-results.xml
+          reporter: java-junit
+
+      - name: Upload E2E HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  deploy:
+    name: 🚀 Deploy & Sync
+    needs: [build-and-unit, e2e-tests]
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      checks: write
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: built-assets
 
-    - name: Install dependencies
-      run: npm install
+      - name: 💾 Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "auto: обновление манифестов и стилей [skip ci]"
+          file_pattern: 'articles/*.json css/style.css'
+          disable_globbing: true
 
-    - name: Create test results directory
-      run: mkdir -p test-results
+      - name: 🌐 Trigger GitHub Pages deploy
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pages/builds
 
-    - name: Build CSS
-      run: npm run build:css
-
-    - name: Run build script (Generate Manifests)
-      run: node scripts/build.js
-
-    - name: Run Unit & Integration Tests
-      run: npm run test
-      continue-on-error: true
-
-    - name: Vitest Summary to Job Summary
-      if: always()
-      run: |
-        echo "### 🧪 Vitest Results" >> $GITHUB_STEP_SUMMARY
-        echo "| Status | Tests | Time |" >> $GITHUB_STEP_SUMMARY
-        echo "| --- | --- | --- |" >> $GITHUB_STEP_SUMMARY
-        if [ -f test-results/vitest-results.xml ]; then
-          PASSED=$(grep -o 'tests="[^"]*"' test-results/vitest-results.xml | head -1 | cut -d'"' -f2)
-          ERRORS=$(grep -o 'errors="[^"]*"' test-results/vitest-results.xml | head -1 | cut -d'"' -f2)
-          FAILURES=$(grep -o 'failures="[^"]*"' test-results/vitest-results.xml | head -1 | cut -d'"' -f2)
-          TIME=$(grep -o 'time="[^"]*"' test-results/vitest-results.xml | head -1 | cut -d'"' -f2)
-          TOTAL=$PASSED
-          FAILED=$((ERRORS + FAILURES))
-          SUCCESS=$((TOTAL - FAILED))
-          if [ $FAILED -eq 0 ]; then
-            echo "| ✅ Success | $SUCCESS / $TOTAL | ${TIME}s |" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "| ❌ Failed | $FAILED / $TOTAL | ${TIME}s |" >> $GITHUB_STEP_SUMMARY
-          fi
-        else
-          echo "| ⚠️ Error | No results file found | - |" >> $GITHUB_STEP_SUMMARY
-        fi
-
-    - name: Publish Vitest Test Report
-      uses: dorny/test-reporter@v1
-      if: always()
-      with:
-        name: Vitest Results
-        path: test-results/vitest-results.xml
-        reporter: java-junit
-
-    - name: Install Playwright Browsers
-      run: npx playwright install chromium
-
-    - name: Install Playwright Dependencies
-      run: npx playwright install-deps chromium
-
-    - name: Start local server
-      run: npx http-server . -p 3000 &
-
-    - name: Wait for server
-      run: npx wait-on http://localhost:3000
-
-    - name: Run E2E Tests
-      run: npm run test:e2e
-      continue-on-error: true
-
-    - name: Playwright Summary to Job Summary
-      if: always()
-      run: |
-        echo "### 🎭 Playwright Results" >> $GITHUB_STEP_SUMMARY
-        echo "| Status | Tests | Time |" >> $GITHUB_STEP_SUMMARY
-        echo "| --- | --- | --- |" >> $GITHUB_STEP_SUMMARY
-        if [ -f test-results/playwright-results.xml ]; then
-          TOTAL=$(grep -o 'tests="[^"]*"' test-results/playwright-results.xml | head -1 | cut -d'"' -f2)
-          FAILURES=$(grep -o 'failures="[^"]*"' test-results/playwright-results.xml | head -1 | cut -d'"' -f2)
-          TIME=$(grep -o 'time="[^"]*"' test-results/playwright-results.xml | head -1 | cut -d'"' -f2)
-          if [ $FAILURES -eq 0 ]; then
-            echo "| ✅ Success | $TOTAL | ${TIME}s |" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "| ❌ Failed | $FAILURES / $TOTAL | ${TIME}s |" >> $GITHUB_STEP_SUMMARY
-          fi
-        else
-          echo "| ⚠️ Error | No results file found | - |" >> $GITHUB_STEP_SUMMARY
-        fi
-
-    - name: Publish Playwright Test Report
-      uses: dorny/test-reporter@v1
-      if: always()
-      with:
-        name: Playwright Results
-        path: test-results/playwright-results.xml
-        reporter: java-junit
-
-    - name: Upload E2E HTML Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
-
-    - name: Commit changes
-      uses: stefanzweifel/git-auto-commit-action@v5
-      with:
-        commit_message: "auto: обновление манифестов и стилей [skip ci]"
-        file_pattern: 'articles/*.json css/style.css'
-        disable_globbing: true
-
-    - name: Trigger GitHub Pages deploy
-      run: |
-        curl -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ github.repository }}/pages/builds
+      - name: 🎉 Final Summary
+        run: |
+          echo "### 🚀 Деплой завершен" >> $GITHUB_STEP_SUMMARY
+          echo "Изменения успешно зафиксированы и отправлены на GitHub Pages." >> $GITHUB_STEP_SUMMARY
