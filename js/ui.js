@@ -78,7 +78,7 @@ export async function renderHomeTracks() {
 
         return `
             <div data-path="article:articles/${t.id}/intro.md" class="card-link p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] cursor-pointer transition-all hover:-translate-y-3 flex flex-col items-center group relative overflow-hidden">
-                <div class="w-16 h-16 md:w-20 md:h-20 track-icon-container mb-6 md:mb-8">
+                <div class="w-16 h-16 md:w-20 md:h-20 track-icon-container bg-white dark:bg-slate-900 mb-6 md:mb-8">
                     ${iconHtml}
                 </div>
                 <h3 class="heading-font text-lg md:text-xl font-bold mb-4 w-full text-center group-hover:text-kvant transition-colors">${t.name}</h3>
@@ -105,7 +105,7 @@ export async function renderTracks() {
         return `
             <div class="bg-slate-50 dark:bg-slate-900 rounded-[1.5rem] md:rounded-[3rem] p-6 md:p-10 border border-slate-100 dark:border-slate-800">
                 <div class="flex items-center space-x-4 md:space-x-5 mb-8 md:mb-10">
-                    <div class="w-14 h-14 md:w-16 md:h-16 track-icon-container">${iconHtml}</div>
+                    <div class="w-14 h-14 md:w-16 md:h-16 track-icon-container bg-white dark:bg-slate-900">${iconHtml}</div>
                     <div class="flex-1">
                         <h3 class="heading-font text-lg md:text-xl mb-1">${t.name}</h3>
                         <div class="flex items-center gap-3">

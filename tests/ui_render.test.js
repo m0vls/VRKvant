@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderPortfolio, renderHomeTracks } from '../js/ui.js';
+import { renderPortfolio, renderHomeTracks, renderTracks } from '../js/ui.js';
 import * as api from '../js/api.js';
 
 // Мокаем API модуль
@@ -21,6 +21,7 @@ describe('UI Generators (js/ui.js)', () => {
             <div id="portfolio-carousel"></div>
             <div id="projects-container"></div>
             <div id="home-tracks-container"></div>
+            <div id="tracks-container"></div>
         `;
         vi.clearAllMocks();
     });
@@ -58,12 +59,12 @@ describe('UI Generators (js/ui.js)', () => {
         expect(document.getElementById('portfolio-carousel').innerHTML).toContain('Проекты появятся здесь');
     });
 
-    it('renderHomeTracks should generate first 3 track cards', async () => {
+    it('renderHomeTracks should generate first 3 track cards and apply background logic', async () => {
         const mockTracks = [
-            { id: 't1', name: 'Track 1', icon: 'fas fa-1', colorClass: 'bg-red-500', lessons: [] },
-            { id: 't2', name: 'Track 2', icon: 'fas fa-2', colorClass: 'bg-blue-500', lessons: [] },
-            { id: 't3', name: 'Track 3', icon: 'fas fa-3', colorClass: 'bg-green-500', lessons: [] },
-            { id: 't4', name: 'Track 4', icon: 'fas fa-4', colorClass: 'bg-yellow-500', lessons: [] }
+            { id: 'unreal', name: 'Unreal', icon: 'fas fa-u', lessons: [] },
+            { id: 'blender', name: 'Blender', icon: 'fas fa-b', lessons: [] },
+            { id: 'unity', name: 'Unity', icon: 'fas fa-y', lessons: [] },
+            { id: 'other', name: 'Other', icon: 'fas fa-o', lessons: [] }
         ];
         
         api.loadTracks.mockResolvedValue(mockTracks);
@@ -74,6 +75,32 @@ describe('UI Generators (js/ui.js)', () => {
         const cards = container.querySelectorAll('.card-link');
         
         expect(cards.length).toBe(3); // Должно быть только первые три
-        expect(cards[0].innerHTML).toContain('Track 1');
+        expect(cards[0].innerHTML).toContain('Unreal');
+        
+        const unrealContainer = container.querySelector('[data-path="article:articles/unreal/intro.md"] .track-icon-container');
+        const blenderContainer = container.querySelector('[data-path="article:articles/blender/intro.md"] .track-icon-container');
+        
+        expect(unrealContainer.classList.contains('bg-white')).toBe(true);
+        expect(unrealContainer.classList.contains('dark:bg-slate-900')).toBe(true);
+        expect(blenderContainer.classList.contains('bg-white')).toBe(true);
+        expect(blenderContainer.classList.contains('dark:bg-slate-900')).toBe(true);
+    });
+
+    it('renderTracks should generate all tracks and apply background logic', async () => {
+        const mockTracks = [
+            { id: 'unreal', name: 'Unreal', icon: 'fas fa-u', lessons: [] },
+            { id: 'blender', name: 'Blender', icon: 'fas fa-b', lessons: [] }
+        ];
+        
+        api.loadTracks.mockResolvedValue(mockTracks);
+        
+        await renderTracks();
+        
+        const container = document.getElementById('tracks-container');
+        const iconBoxes = container.querySelectorAll('.track-icon-container.bg-white.dark\\:bg-slate-900');
+        
+        expect(iconBoxes.length).toBe(2);
+        expect(iconBoxes[0].previousElementSibling).toBeNull(); // it's first in its parent (name is in another container) - wait, looking at HTML it's first in flex container
     });
 });
+

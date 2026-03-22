@@ -30,8 +30,9 @@
     },
     {
       "id": "unreal",
-      "name": "Unreal Engine",
-      "icon": "https://cdn.simpleicons.org/unrealengine/fff",
+      \"name\": \"Unreal Engine\",
+      \"icon\": \"https://upload.wikimedia.org/wikipedia/commons/1/15/UE_Logo_Black_Centered.svg\",
+
       "colorClass": "bg-black dark:bg-[#0a0a0a]",
       "lessons": [
         {
