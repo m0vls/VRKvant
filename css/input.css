@@ -4,6 +4,9 @@
 
 /* Ваши кастомные стили здесь */
 @layer base {
+  body {
+    @apply heading-font text-slate-700 dark:text-slate-300;
+  }
   h1, h2, h3, h4, h5, h6 {
     @apply heading-font;
   }
@@ -103,6 +106,10 @@
   /* Стили для статьи */
   .prose {
     @apply text-slate-700 dark:text-slate-300 antialiased;
+  }
+  
+  .prose p, .prose ul, .prose ol, .prose li {
+    @apply text-slate-700 dark:text-slate-300;
   }
   
   .prose h2 {
