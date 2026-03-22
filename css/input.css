@@ -4,6 +4,9 @@
 
 /* Ваши кастомные стили здесь */
 @layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply heading-font;
+  }
   .heading-font {
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   }
@@ -103,7 +106,7 @@
   }
   
   .prose h2 {
-    @apply block text-center mb-8 mt-12 text-slate-800 dark:text-white uppercase tracking-[0.2em] font-black text-xl md:text-2xl border-none bg-transparent p-0 rounded-none w-full !important;
+    @apply block text-left mb-8 mt-12 text-slate-800 dark:text-white uppercase tracking-[0.2em] font-black text-xl md:text-2xl border-none bg-transparent p-0 rounded-none;
   }
 
   .prose h3 {
@@ -153,5 +156,14 @@
 
   .copy-code-btn {
     @apply hover:text-kvant transition-colors flex items-center gap-1.5;
+  }
+
+  /* Единый стиль для иконок треков */
+  .track-icon-container {
+    @apply bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-md border border-slate-100 dark:border-slate-800/50 text-kvant transition-all duration-300;
+  }
+  
+  .card-link:hover .track-icon-container {
+    @apply shadow-xl shadow-kvant/10 -translate-y-1 border-kvant/20;
   }
 }

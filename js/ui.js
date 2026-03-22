@@ -73,19 +73,12 @@ export async function renderHomeTracks() {
     // Берем первые 3 трека для главной
     container.innerHTML = tracks.slice(0, 3).map(t => {
         const iconHtml = (t.icon && t.icon.includes('/')) 
-            ? `<img src="${t.icon}" alt="icon" class="w-10 h-10 md:w-12 md:h-12 object-contain group-hover:scale-110 transition-transform" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968391.png'">` 
-            : `<i class="${t.icon} text-3xl md:text-[2.5rem] text-indigo-500 leading-none group-hover:scale-110 transition-transform"></i>`;
-
-        const lessonsWithPaths = t.lessons.map(l => ({ ...l, trackPath: `articles/${t.id}` }));
-        const progress = getTrackProgress(lessonsWithPaths);
-
-        // Используем белый фон для Unreal, чтобы логотип был виден
-        const iconBg = t.id === 'unreal' ? 'bg-zinc-900 dark:bg-white' : (t.id === 'unity' ? 'bg-slate-100 dark:bg-zinc-800' : 'bg-white dark:bg-slate-800');
-        const iconTextColor = t.id === 'unreal' ? 'text-white dark:text-black' : (t.id === 'unity' ? 'text-black dark:text-white' : 'text-kvant');
+            ? `<img src="${t.icon}" alt="icon" class="w-10 h-10 md:w-12 md:h-12 object-contain transition-transform">` 
+            : `<i class="${t.icon} text-3xl md:text-[2.5rem] leading-none transition-transform"></i>`;
 
         return `
             <div data-path="article:articles/${t.id}/intro.md" class="card-link p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] cursor-pointer transition-all hover:-translate-y-3 flex flex-col items-center group relative overflow-hidden">
-                <div class="w-16 h-16 md:w-20 md:h-20 ${iconBg} ${iconTextColor} rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg mb-6 md:mb-8 border border-slate-100 dark:border-slate-800/50">
+                <div class="w-16 h-16 md:w-20 md:h-20 track-icon-container mb-6 md:mb-8">
                     ${iconHtml}
                 </div>
                 <h3 class="heading-font text-lg md:text-xl font-bold mb-4 w-full text-center group-hover:text-kvant transition-colors">${t.name}</h3>
@@ -100,8 +93,8 @@ export async function renderTracks() {
 
     container.innerHTML = tracks.map(t => {
         const iconHtml = (t.icon && t.icon.includes('/')) 
-            ? `<img src="${t.icon}" alt="icon" class="w-10 h-10 md:w-11 md:h-11 object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968391.png'">` 
-            : `<i class="${t.icon} text-lg md:text-xl"></i>`;
+            ? `<img src="${t.icon}" alt="icon" class="w-8 h-8 md:w-9 md:h-9 object-contain">` 
+            : `<i class="${t.icon} text-2xl md:text-3xl"></i>`;
 
         const modules = groupLessonsByModule(t.lessons);
         
@@ -109,13 +102,10 @@ export async function renderTracks() {
         const lessonsWithPaths = t.lessons.map(l => ({ ...l, trackPath: `articles/${t.id}` }));
         const progress = getTrackProgress(lessonsWithPaths);
 
-        const iconBg = t.id === 'unreal' ? 'bg-zinc-900 dark:bg-white' : (t.id === 'unity' ? 'bg-slate-100 dark:bg-zinc-800' : (t.colorClass || 'bg-kvant'));
-        const iconTextColor = t.id === 'unreal' ? 'text-white dark:text-black' : (t.id === 'unity' ? 'text-black dark:text-white' : 'text-white');
-
         return `
             <div class="bg-slate-50 dark:bg-slate-900 rounded-[1.5rem] md:rounded-[3rem] p-6 md:p-10 border border-slate-100 dark:border-slate-800">
                 <div class="flex items-center space-x-4 md:space-x-5 mb-8 md:mb-10">
-                    <div class="w-12 h-12 md:w-14 md:h-14 ${iconBg} ${iconTextColor} rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg border border-slate-100 dark:border-slate-800/50">${iconHtml}</div>
+                    <div class="w-14 h-14 md:w-16 md:h-16 track-icon-container">${iconHtml}</div>
                     <div class="flex-1">
                         <h3 class="heading-font text-lg md:text-xl mb-1">${t.name}</h3>
                         <div class="flex items-center gap-3">
